@@ -1,5 +1,5 @@
 # Keras Attention Layer
-Attention layer implementation in Keras based on the work of Yang et al. ["Hierarchical Attention Networks
+Dead-simple Attention layer implementation in Keras based on the work of Yang et al. ["Hierarchical Attention Networks
 for Document Classification"](https://www.cs.cmu.edu/~hovy/papers/16HLT-hierarchical-attention-networks.pdf) and on the
 implementation by [Christos Baziotis](https://gist.github.com/cbaziotis/7ef97ccf71cbc14366835198c09809d2). The differences
 on this implementation include:
