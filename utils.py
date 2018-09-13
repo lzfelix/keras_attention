@@ -18,15 +18,16 @@ def build_copy_model(model, has_masking=False):
         masked_in = sequence_in
         offset = 0
     
-    lstm2 = layers.LSTM(5,
+    lstm = layers.LSTM(5,
                         return_sequences=True,
                         name='LSTM',
                         weights=model.layers[offset + 1].get_weights()
                        )(masked_in)
+    
+    att = AttentionLayer(return_coefficients=True,
+                         weights=model.layers[offset + 2].get_weights()
+                        )(lstm)
 
-    _, att = AttentionLayer(return_coefficients=True,
-                            weights=model.layers[offset + 2].get_weights()
-                           )(lstm2)
     model = models.Model(inputs=[sequence_in], outputs=[att])    
 
     model.summary()

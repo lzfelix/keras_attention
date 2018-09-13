@@ -4,10 +4,11 @@ from keras import regularizers
 from keras import constraints
 from keras.layers import Layer
 
+
 class AttentionLayer(Layer):
-    """Attention layer implementation based on the code from Baziotis, Christos on
-    Gist (https://gist.github.com/cbaziotis/7ef97ccf71cbc14366835198c09809d2) and on
-    the work of Yang et al. [https://www.cs.cmu.edu/~diyiy/docs/naacl16.pdf]
+    """Attention layer implementation based on the code from Christos Baziotis on
+    Gist (https://gist.github.com/cbaziotis/7ef97ccf71cbc14366835198c09809d2) and
+    in the work of Yang et al. [https://www.cs.cmu.edu/~diyiy/docs/naacl16.pdf]
     "Hierarchical Attention Networks for Document Classification".
     
     The difference between these implementations are:
@@ -16,13 +17,13 @@ class AttentionLayer(Layer):
     - Easy way to retrieve attention weights;
     - Tested with TensorFlow backend only!
     """
-    
+
     @staticmethod
     def dot_product(x, kernel):
         """
         Wrapper for dot product between a matrix and a vector x*u.
-        The shapes are arranged as (batch_size, timesteps, features) \
-        * (features,) = (batch_size, timesteps)
+        The shapes are arranged as (batch_size, timesteps, features)
+        * (features,) = (batch_size, timesteps, 1) = (batch, timesteps)
         Args:
             x: Matrix with shape (batch_size, timesteps, features)
             u: Vector with shape (features,)
@@ -33,15 +34,22 @@ class AttentionLayer(Layer):
             return K.squeeze(K.dot(x, K.expand_dims(kernel)), axis=-1)
         else:
             return K.dot(x, kernel)
-    
+
     def __init__(self, return_coefficients=False,
                  W_regularizer=None, u_regularizer=None, b_regularizer=None,
                  W_constraint=None, u_constraint=None, b_constraint=None,
                  bias=True, **kwargs):
-        """If return_coefficients is True, this layer produces two outputs,
-        the first is the weighted hidden tensor for the input sequence with
-        shape (batch_size, n_features) and the second the attention weights
-        with shape (batch_size, seq_len, 1). This layer supports masking."""
+        """If return_coefficients is True, this layer returns only the attetnion
+        coefficients, if False, it will return, for each sample, their attended
+        vectors. While classifying sentences, the input of this layer should have
+        shape (batch_size, n_timesteps, feature_dim) and the outputs for the first
+        and second case are (batch_size, feature_dim) and (batch_size, n_timesteps),
+        respectivelly. On the other hand, if documents are being classified, in
+        other words, list of sentences, the input should have shape
+        (batch_size, n_sentences, n_timesteps, n_features) and the output will be
+        (batch_size, n_sentences, n_features) if return_coefficients=True and
+        (batch_size, n_sentences, n_timesteps) otherwise. Having the attention
+        weights may be useful for visualization. This layer supports masking."""
     
         self.supports_masking = True
         self.return_coefficients = return_coefficients
@@ -57,7 +65,7 @@ class AttentionLayer(Layer):
 
         self.bias = bias
         super(AttentionLayer, self).__init__(**kwargs)
-        
+
     def build(self, input_shape):
         assert len(input_shape) == 3
         
@@ -74,6 +82,8 @@ class AttentionLayer(Layer):
                                      regularizer=self.b_regularizer,
                                      constraint=self.b_constraint)
 
+        # in this case, the size of the context vector u is the same as the
+        # each timestep dimensionality
         self.u = self.add_weight((input_shape[-1],),
                                  initializer=self.init,
                                  name='{}_u'.format(self.name),
@@ -81,17 +91,18 @@ class AttentionLayer(Layer):
                                  constraint=self.u_constraint)
 
         super(AttentionLayer, self).build(input_shape)
-        
+
     @staticmethod
     def masked_softmax(alpha, mask):
-        """Masks alpha and then performs softmax, as Keras's softmax doesn't support masking."""
+        """Masks alpha and then performs softmax, as Keras's softmax doesn't
+        support masking."""
         alpha = K.exp(alpha)
         if mask is not None:
             alpha *= K.cast(mask, K.floatx())
 
         partition = K.cast(K.sum(alpha, axis=1, keepdims=True) + K.epsilon(), K.floatx())
         return alpha / partition
-    
+
     def call(self, x, mask=None):        
         # V = tanh(Wx+b), but vectorized as V = tanh(X*W + b)
         v_att = K.dot(x, self.W)                   # > (batch, seq_len, attention_size = amount_features)
@@ -110,23 +121,29 @@ class AttentionLayer(Layer):
         # c_i = sum_i(x_i * alpha_i)
         c = K.sum(attended_x, axis=1)              # > (batch, amount_features)
         
+        self.alphas = alpha
+        
         if self.return_coefficients:
-            return [c, alpha]
+            return K.squeeze(alpha, axis=-1)
         else:
             return c
-    
+
     def compute_output_shape(self, input_shape):
         """The attention mechanism computes a weighted average between all
         hidden vectors generated by the previous sequential layer, hence the
         input is expected to be (batch_size, seq_len, amount_features) and
         after averaging each feature vector, the output it (batch_size, seq_len)."""
+
         if self.return_coefficients:
-            return [(input_shape[0], input_shape[-1]), (input_shape[0], input_shape[-1], 1)]
+            # if set to return the attention weights, discards the feature
+            # dimension (last) and keeps the sequence
+            return (input_shape[:-1])
         else:
-            return (input_shape[0], input_shape[-1])
-    
+            # if set to return the attended vector, discards the dimension
+            # with the sequence lenght (the penultimate)
+            return tuple(input_shape[:-2] + input_shape[-1:])
+
     def compute_mask(self, x, input_mask=None):
         """This layer produces a single attended vector from a list of hidden vectors,
-        hence it can't be masked as this means masking a single vector.
-        """
+        hence it can't be masked as this means masking a single vector."""
         return None
