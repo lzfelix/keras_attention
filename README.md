@@ -9,8 +9,9 @@ for Document Classification"](https://www.cs.cmu.edu/~hovy/papers/16HLT-hierarch
 - Numerically stable softmax using the exp-normalize trick; **(New!)**
 - Easy way to recover the attention weights applied to each sample to make nice visualizations (see
 [neat-vision](https://github.com/cbaziotis/neat-vision)); **(Updated!)**
-- Example showing differences between vanilla and attention model and attention with masking.
-- Example on the sum toy task showing how attention weights can be distributed across timesteps in a sample **(New!)**
+- Example showing differences between vanilla and attention model and attention with masking,
+- Example on the sum toy task showing how attention weights can be distributed across timesteps in a sample **(New!)**,
+- Allows customizing the attention activation function, since removing it might be beneficial for some tasks, as shown in ["A Thorough Examination of the CNN/Daily Mail Reading Comprehension Task"](https://arxiv.org/abs/1606.02858) by Chen et al. **(New!)**
 
 
 ![Attention example](https://github.com/lzfelix/keras_attention/blob/master/attention_example.png)
