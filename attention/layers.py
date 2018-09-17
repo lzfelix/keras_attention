@@ -147,7 +147,7 @@ class AttentionLayer(Layer):
             return K.sum(x * alpha, axis=1)
     
     def _masked_softmax(self, logits, mask):
-        """Kera's default implementation of softmax doesn't allow masking, while
+        """Keras's default implementation of softmax doesn't allow masking, while
         this method does if `mask` is not `None`."""
         
         # softmax(x):
