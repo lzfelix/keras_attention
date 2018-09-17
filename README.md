@@ -11,11 +11,16 @@ for Document Classification"](https://www.cs.cmu.edu/~hovy/papers/16HLT-hierarch
 [neat-vision](https://github.com/cbaziotis/neat-vision)); **(Updated!)**
 - Example showing differences between vanilla, attention model and attention with masking;
 - Example on the sum toy task showing how attention weights can be distributed across timesteps in a sample; **(New!)**
-- Example on sentiment analysis of movie reviews; **(New!)**
+- Example on sentiment analysis of movie reviews (but GitHub does not render notebook markup, you may want to download the notebook to see word highlights, as in the example below); **(New!)**
 - Allows customizing the attention activation function, since removing it might be beneficial for some tasks, as shown in ["A Thorough Examination of the CNN/Daily Mail Reading Comprehension Task"](https://arxiv.org/abs/1606.02858) by Chen et al. **(New!)**
 
+
+
+
+
 ![Attention example on a movie review](https://github.com/lzfelix/keras_attention/blob/master/movie_attention.png)
-Example of attention on words for sentiment classification in a movie review in the Keras IMDb dataset. Darker colors mean larger weights and, consequently, more importance is given to that term.
+
+Example of attention on words for sentiment classification in a movie review in the Keras IMDb dataset. Darker colors mean larger weights and, consequently, more importance is given to those term.
 
 ![Attention example](https://github.com/lzfelix/keras_attention/blob/master/attention_example.png)
 Example of attention weights across timesteps during the classification of a sequential sample.
