@@ -18,9 +18,8 @@ for Document Classification"](https://www.cs.cmu.edu/~hovy/papers/16HLT-hierarch
 
 
 
-![Attention example on a movie review](https://github.com/lzfelix/keras_attention/blob/master/movie_attention.png)
-
+> ![Attention example on a movie review](https://github.com/lzfelix/keras_attention/blob/master/movie_attention.png)
 Example of attention on words for sentiment classification in a movie review in the Keras IMDb dataset. Darker colors mean larger weights and, consequently, more importance is given to those term.
 
-![Attention example](https://github.com/lzfelix/keras_attention/blob/master/attention_example.png)
+> ![Attention example](https://github.com/lzfelix/keras_attention/blob/master/attention_example.png)
 Example of attention weights across timesteps during the classification of a sequential sample.
