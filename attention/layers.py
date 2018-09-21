@@ -184,3 +184,24 @@ class AttentionLayer(Layer):
         of hidden vectors, hence it can't be masked as this means
         masking a single vector."""
         return None
+
+    def get_config(self):
+        config = {
+            'activation': self.activation,
+            'initializer': self.initializer,
+            'return_attention': self.return_attention,
+
+            'W_regularizer': initializers.serialize(self.W_regularizer),
+            'u_regularizer': initializers.serialize(self.u_regularizer),
+            'b_regularizer': initializers.serialize(self.b_regularizer),
+
+            'W_constraint': constraints.serialize(self.W_constraint),
+            'u_constraint': constraints.serialize(self.u_constraint),
+            'b_constraint': constraints.serialize(self.b_constraint),
+            
+            'bias': self.bias
+        }
+
+        base_config = super().get_config()
+        return dict(list(base_config.items()) + list(config.items()))
+
