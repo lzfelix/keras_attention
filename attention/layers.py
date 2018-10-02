@@ -166,6 +166,12 @@ class AttentionLayer(Layer):
             exped *= mask
 
         partition = K.sum(exped, axis=-1, keepdims=True)
+
+        # if all timesteps are masked, the partition will be zero. To avoid this
+        # issue we use the following trick:
+        epsilons = K.maximum(partition, K.epsilon())
+        partition += epsilons
+
         return exped / partition
 
     def compute_output_shape(self, input_shape):
