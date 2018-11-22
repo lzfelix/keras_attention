@@ -7,6 +7,7 @@ from keras import initializers
 from keras import activations
 
 
+
 class AttentionLayer(Layer):
     """Attention layer implementation based in the work of Yang et al. "Hierarchical
     Attention Networks for Document Classification". This implementation also allows
@@ -169,8 +170,7 @@ class AttentionLayer(Layer):
 
         # if all timesteps are masked, the partition will be zero. To avoid this
         # issue we use the following trick:
-        epsilons = K.maximum(partition, K.epsilon())
-        partition += epsilons
+        partition = K.maximum(partition, K.epsilon())
 
         return exped / partition
 
